@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>UDI-6 + IIQ-7（繁體中文）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:#f5f5f7; padding:20px; }
+.container { max-width:900px; margin:auto; background:#fff; padding:20px; border-radius:10px; }
+h1 { font-size:1.6rem; margin-top:30px; }
+.instructions { font-size:0.95rem; color:#444; }
+table { width:100%; border-collapse:collapse; margin-top:1rem; }
+th, td { padding:10px; vertical-align:top; }
+tr:nth-child(even) { background:#fafafa; }
+button { margin-top:20px; padding:10px 20px; font-size:1rem; border:none; border-radius:5px; background:#007aff; color:#fff; cursor:pointer; }
+button:hover { background:#005fcc; }
+
+.modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); }
+.modal-content { background:#fff; margin:10% auto; padding:20px; border-radius:10px; width:90%; max-width:400px; text-align:center; }
+.close { float:right; font-size:28px; cursor:pointer; }
+.result-score { font-size:1.4rem; font-weight:bold; margin:10px 0; }
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<!-- UDI-6 -->
+<h1>症狀評估（UDI‑6）</h1>
+<p class="instructions">請為每一題選擇一個答案。</p>
+
+<table>
+<tr><th>項目</th><th>問題</th><th>回答</th></tr>
+
+<script>
+const udiItems = [
+"經常去小便",
+"由急迫感覺引致的失禁",
+"由活動、咳嗽或打噴嚏引致的失禁",
+"小量的小便失禁（例如數滴）",
+"有困難去排清小便",
+"小腹或生殖器官部位的疼痛或不適"
+];
+
+for (let i=1;i<=6;i++){
+document.write(`
+<tr>
+<td>${i}</td>
+<td>${udiItems[i-1]}</td>
+<td>
+<label><input type="radio" name="udi${i}" value="0">完全沒有</label>
+<label><input type="radio" name="udi${i}" value="1">輕微</label>
+<label><input type="radio" name="udi${i}" value="2">中度</label>
+<label><input type="radio" name="udi${i}" value="3">嚴重</label>
+</td>
+</tr>
+`);
+}
+</script>
+</table>
+
+<!-- IIQ-7 -->
+<h1>生活影響評估（IIQ‑7）</h1>
+<p class="instructions">請為每一題選擇一個答案。</p>
+
+<table>
+<tr><th>項目</th><th>問題</th><th>回答</th></tr>
+
+<script>
+const iiqItems = [
+"做家務的能力（例如：煮飯、清潔家居或洗衣等）",
+"體育康樂（例如：步行、游泳或做運動等）",
+"娛樂活動（例如：睇戲、聽演唱會等）",
+"搭車或駕駛車輛外出半小時或以上的能力",
+"外出參與社交活動",
+"心理健康（如精神緊張、抑鬱或憤怒）",
+"羞愧感覺"
+];
+
+for (let i=1;i<=7;i++){
+document.write(`
+<tr>
+<td>${i}</td>
+<td>${iiqItems[i-1]}</td>
+<td>
+<label><input type="radio" name="iiq${i}" value="0">完全沒有</label>
+<label><input type="radio" name="iiq${i}" value="1">輕微</label>
+<label><input type="radio" name="iiq${i}" value="2">中度</label>
+<label><input type="radio" name="iiq${i}" value="3">嚴重</label>
+</td>
+</tr>
+`);
+}
+</script>
+</table>
+
+<button onclick="openPassword()">展示給治療師</button>
+
+</div>
+
+<!-- Modal -->
+<div id="resultModal" class="modal">
+<div class="modal-content">
+<span class="close" onclick="closeModal()">&times;</span>
+
+<div id="passwordSection">
+<p>請輸入密碼：</p>
+<input type="password" id="pwdInput">
+<button onclick="verifyPassword()">確認</button>
+</div>
+
+<div id="resultSection" style="display:none;">
+<h3>結果</h3>
+<p>UDI‑6 總分：<span id="udiScore"></span></p>
+<p>IIQ‑7 總分：<span id="iiqScore"></span></p>
+</div>
+
+</div>
+</div>
+
+<script>
+function openPassword(){
+ document.getElementById("resultModal").style.display = "block";
+}
+
+function closeModal(){
+ document.getElementById("resultModal").style.display = "none";
+ document.getElementById("passwordSection").style.display = "block";
+ document.getElementById("resultSection").style.display = "none";
+}
+
+function verifyPassword(){
+ const pwd = document.getElementById("pwdInput").value;
+ if (pwd !== "225500"){
+   alert("密碼錯誤");
+   return;
+ }
+ calculateScores();
+ document.getElementById("passwordSection").style.display = "none";
+ document.getElementById("resultSection").style.display = "block";
+}
+
+function calculateScores(){
+ // UDI‑6
+ let udiTotal = 0;
+ for (let i=1;i<=6;i++){
+   const radios = document.getElementsByName("udi"+i);
+   for (const r of radios){
+     if (r.checked) udiTotal += Number(r.value);
+   }
+ }
+ document.getElementById("udiScore").textContent = udiTotal;
+
+ // IIQ‑7
+ let iiqTotal = 0;
+ for (let i=1;i<=7;i++){
+   const radios = document.getElementsByName("iiq"+i);
+   for (const r of radios){
+     if (r.checked) iiqTotal += Number(r.value);
+   }
+ }
+ document.getElementById("iiqScore").textContent = iiqTotal;
+}
+</script>
+
+</body>
+</html>
